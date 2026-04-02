@@ -4,8 +4,8 @@ const redis = Redis.fromEnv();
 
 const FEED_URL = 'https://medium.com/feed/@jackgreencrypto';
 const RSS_API = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(FEED_URL);
-const CACHE_KEY = 'medium-articles-v3';
-const SUMMARY_PREFIX = 'ai2:';
+const CACHE_KEY = 'medium-articles-v4';
+const SUMMARY_PREFIX = 'ai3:';
 const CACHE_TTL = 60 * 60;
 
 function stripHtml(html) {
@@ -46,7 +46,7 @@ async function generateSummary(title, content) {
       'anthropic-version': '2023-06-01'
     },
     body: JSON.stringify({
-      model: 'claude-3-5-haiku-20241022',
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 150,
       messages: [
         {
