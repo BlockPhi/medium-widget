@@ -6,7 +6,8 @@ const anthropic = new Anthropic();
 
 const FEED_URL = 'https://medium.com/feed/@jackgreencrypto';
 const RSS_API = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(FEED_URL);
-const CACHE_KEY = 'medium-articles-v1';
+const CACHE_KEY = 'medium-articles-v2';
+const SUMMARY_PREFIX = 'ai-summary:'; // v2 prefix to invalidate old fallback summaries
 const CACHE_TTL = 60 * 60; // 1 hour — RSS check frequency
 
 /**
@@ -49,7 +50,7 @@ async function generateSummary(title, content) {
   const text = stripHtml(content).substring(0, 3000); // limit context
 
   const message = await anthropic.messages.create({
-    model: 'claude-haiku-4-20250414',
+    model: 'claude-3-5-haiku-20241022',
     max_tokens: 150,
     messages: [
       {
@@ -65,11 +66,13 @@ async function generateSummary(title, content) {
 /**
  * Process all articles: fetch RSS, generate summaries for new ones, cache everything
  */
-async function getArticlesWithSummaries() {
-  // Check cache first
-  const cached = await redis.get(CACHE_KEY);
-  if (cached) {
-    return cached;
+async function getArticlesWithSummaries(forceRefresh = false) {
+  // Check cache first (skip if force refresh)
+  if (!forceRefresh) {
+    const cached = await redis.get(CACHE_KEY);
+    if (cached) {
+      return cached;
+    }
   }
 
   // Fetch RSS feed
@@ -82,10 +85,10 @@ async function getArticlesWithSummaries() {
 
   for (const item of data.items) {
     const articleId = Buffer.from(item.link).toString('base64').substring(0, 40);
-    const summaryKey = `summary:${articleId}`;
+    const summaryKey = `${SUMMARY_PREFIX}${articleId}`;
 
-    // Check if we already have a summary cached for this specific article
-    let summary = await redis.get(summaryKey);
+    // Check if we already have an AI summary cached for this specific article
+    let summary = forceRefresh ? null : await redis.get(summaryKey);
 
     if (!summary) {
       // Generate new summary with Claude
@@ -131,7 +134,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    const articles = await getArticlesWithSummaries();
+    const forceRefresh = req.query.refresh === '1';
+    const articles = await getArticlesWithSummaries(forceRefresh);
     return res.status(200).json({
       status: 'ok',
       items: articles
