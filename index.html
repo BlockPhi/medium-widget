@@ -19,6 +19,7 @@
       --white-60: rgba(252,252,252,0.6);
       --white-40: rgba(252,252,252,0.4);
       --white-25: rgba(252,252,252,0.25);
+      --white-12: rgba(252,252,252,0.12);
       --white-06: rgba(252,252,252,0.06);
       --border: rgba(0,31,63,0.3);
       --ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -100,7 +101,7 @@
       font-weight: 300;
       font-size: 0.95rem;
       line-height: 1.3;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.45rem;
       color: var(--white);
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -108,12 +109,46 @@
       overflow: hidden;
     }
 
-    .card-body .meta {
+    /* ── Summary ── */
+    .card-summary {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 300;
+      font-size: 0.62rem;
+      line-height: 1.55;
+      color: var(--white-40);
+      margin-bottom: 0.6rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* ── Author + Meta row ── */
+    .card-footer {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: auto;
+    }
+
+    .author-avatar {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      opacity: 0.85;
+    }
+
+    .card-footer .meta {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.55rem;
       letter-spacing: 0.06em;
       color: var(--white-25);
-      margin-top: auto;
+    }
+
+    .meta-sep {
+      color: var(--white-12);
     }
 
     /* Entire card is clickable */
@@ -265,6 +300,10 @@
     const FEED = 'https://medium.com/feed/@jackgreencrypto';
     const API  = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(FEED);
 
+    /* Jack's headshot — hosted on the main site */
+    const AUTHOR_IMG = 'https://www.blockphi.com/images/Jack.jpg';
+    const AUTHOR_NAME = 'Jack';
+
     const track = document.getElementById('track');
     const prev  = document.getElementById('prev');
     const next  = document.getElementById('next');
@@ -326,6 +365,52 @@
       return m ? (m[1].replace(/^\/\//, 'https://')) : '';
     }
 
+    /* Strip HTML tags and get plain text */
+    function stripHtml(html) {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      return tmp.textContent || tmp.innerText || '';
+    }
+
+    /* Estimate read time from article content (words / 238 wpm avg) */
+    function estimateReadTime(html) {
+      const text = stripHtml(html);
+      const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+      const minutes = Math.max(1, Math.round(words / 238));
+      return minutes;
+    }
+
+    /* Generate a concise summary from article HTML content.
+       Extracts the first ~3 meaningful sentences, skipping headings and short fragments. */
+    function generateSummary(html) {
+      const text = stripHtml(html);
+
+      /* Remove the title if it appears at the start */
+      const cleaned = text.replace(/^Continue reading on Medium\s*»?\s*/i, '').trim();
+
+      /* Split into sentences */
+      const sentences = cleaned.match(/[^.!?]+[.!?]+/g);
+      if (!sentences || sentences.length === 0) {
+        /* Fallback: take first 180 chars */
+        return cleaned.substring(0, 180).trim() + (cleaned.length > 180 ? '...' : '');
+      }
+
+      /* Filter out very short fragments (headings, labels) and pick first 2-3 meaningful ones */
+      const meaningful = sentences
+        .map(s => s.trim())
+        .filter(s => s.length > 30 && !s.match(/^(continue reading|by |photo by |image |source:)/i));
+
+      const picked = meaningful.slice(0, 3);
+      let summary = picked.join(' ').trim();
+
+      /* Trim to ~200 chars max for compact display */
+      if (summary.length > 200) {
+        summary = summary.substring(0, 197).replace(/\s+\S*$/, '') + '...';
+      }
+
+      return summary;
+    }
+
     fetch(API)
       .then(r => { if (!r.ok) throw Error(); return r.json(); })
       .then(data => {
@@ -354,7 +439,8 @@
         reordered.forEach(item => {
           const date = new Date(item.pubDate);
           const fmt  = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
-          const days = Math.floor((Date.now() - date) / 864e5);
+          const readMin = estimateReadTime(item.description || item.content || '');
+          const summary = generateSummary(item.description || item.content || '');
           const img  = extractImg(item.description);
 
           const el = document.createElement('a');
@@ -366,7 +452,11 @@
             (img ? '<div class="card-img"><img src="' + img + '" alt="" loading="lazy"></div>' : '') +
             '<div class="card-body">' +
               '<h3>' + item.title + '</h3>' +
-              '<p class="meta">' + fmt + ' &middot; ' + days + 'd ago</p>' +
+              (summary ? '<p class="card-summary">' + summary + '</p>' : '') +
+              '<div class="card-footer">' +
+                '<img src="' + AUTHOR_IMG + '" alt="' + AUTHOR_NAME + '" class="author-avatar" loading="lazy">' +
+                '<span class="meta">' + AUTHOR_NAME + ' <span class="meta-sep">&middot;</span> ' + fmt + ' <span class="meta-sep">&middot;</span> ' + readMin + ' min read</span>' +
+              '</div>' +
             '</div>';
           track.appendChild(el);
         });
