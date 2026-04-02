@@ -3,46 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="Latest articles from Jack Green on Medium">
-  <meta name="author" content="Jack Green">
-  <title>Medium Articles</title>
+  <meta name="description" content="Latest research articles from BlockPhi Capital">
+  <meta name="author" content="BlockPhi Capital">
+  <title>BlockPhi Capital — Research Articles</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Montserrat:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
   <style>
-    @font-face {
-      font-family: 'Pp Eiko Thin';
-      src: url('fonts/PPEiko-Thin.otf') format('opentype');
-      font-weight: 100;
-      font-style: normal;
-      font-display: swap;
+    /* ═══════════════════════════════════════════
+       BlockPhi Capital — Medium Widget
+       Design System: Dark base, navy accents
+       Fonts: Cormorant Garamond / Montserrat / JetBrains Mono
+       ═══════════════════════════════════════════ */
+
+    :root {
+      --black: #0a0a0a;
+      --black-card: #111111;
+      --navy: #001F3F;
+      --navy-mid: #003166;
+      --text-blue: #4A8EC9;
+      --white: #fcfcfc;
+      --white-60: rgba(252, 252, 252, 0.6);
+      --white-40: rgba(252, 252, 252, 0.4);
+      --white-25: rgba(252, 252, 252, 0.25);
+      --white-12: rgba(252, 252, 252, 0.12);
+      --white-06: rgba(252, 252, 252, 0.06);
+      --border: rgba(0, 31, 63, 0.3);
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
     }
-    
-    body {
-      font-family: 'Pp Eiko Thin', serif;
-      padding: 30px 15px;
-      background: transparent;
+
+    *,
+    *::before,
+    *::after {
       margin: 0;
-      color: #333;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      padding: 20px 15px;
+      background: transparent;
+      color: var(--white);
       line-height: 1.5;
       position: relative;
     }
-    
-    h3 {
-      font-family: 'Pp Eiko Thin', serif;
-      font-weight: 300;
-      font-size: 1.5rem;
-      margin-bottom: 0.7rem;
-      margin-top: 0;
-    }
-    
-    p {
-      font-family: 'Pp Eiko Thin', serif;
-      font-size: 1rem;
-      color: #444;
-      margin-bottom: 1.2rem;
-    }
-    
+
+    /* Carousel */
     .carousel-container {
       position: relative;
       max-width: 1000px;
@@ -51,60 +58,36 @@
       padding: 0 50px;
       background: transparent;
     }
-    
+
     #mediumRepeater {
       display: flex;
-      transition: transform 0.5s ease;
+      transition: transform 0.5s var(--ease);
       gap: 40px;
       padding: 20px 0;
       align-items: stretch;
     }
-    
+
+    /* Cards */
     .article-card {
-      background: white;
+      background: var(--black-card);
+      border: 1px solid var(--white-06);
       border-radius: 4px;
       overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transition: transform 0.35s var(--ease), border-color 0.35s var(--ease), box-shadow 0.35s var(--ease);
       display: flex;
       flex-direction: column;
       min-width: calc(33.333% - 27px);
       flex: 0 0 calc(33.333% - 27px);
       max-width: calc(33.333% - 27px);
     }
-    
-    @media (max-width: 1024px) {
-      .article-card {
-        min-width: calc(50% - 15px);
-        flex: 0 0 calc(50% - 15px);
-      }
-      
-      .carousel-container {
-        padding: 0 40px;
-      }
-    }
-    
-    @media (max-width: 640px) {
-      .article-card {
-        min-width: 100%;
-        flex: 0 0 100%;
-      }
-      
-      .carousel-container {
-        padding: 0 30px;
-      }
-      
-      .nav-arrow svg {
-        width: 24px;
-        height: 24px;
-      }
-    }
-    
+
     .article-card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-color: var(--border);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     }
-    
+
+    /* Card Image */
     .img-container {
       width: 100%;
       height: 160px;
@@ -112,77 +95,94 @@
       position: relative;
       flex-shrink: 0;
     }
-    
+
     .img-container img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.3s ease;
+      transition: transform 0.5s var(--ease);
     }
-    
+
     .article-card:hover .img-container img {
       transform: scale(1.05);
     }
-    
+
+    /* Card Content */
     .card-content {
       padding: 20px;
       display: flex;
       flex-direction: column;
       flex: 1;
     }
-    
+
     .article-card h3 {
-      font-family: 'Pp Eiko Thin', serif;
+      font-family: 'Cormorant Garamond', Georgia, serif;
       font-weight: 300;
       font-size: 1.3rem;
       margin-bottom: 0.7rem;
       margin-top: 0;
       line-height: 1.3;
+      color: var(--white);
     }
-    
+
     .article-card p {
-      font-family: 'Pp Eiko Thin', serif;
+      font-family: 'Cormorant Garamond', Georgia, serif;
       font-size: 0.95rem;
-      color: #555;
+      color: var(--white-40);
       margin-bottom: 1.2rem;
       line-height: 1.5;
     }
-    
+
+    .published-info {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem !important;
+      letter-spacing: 0.06em;
+      color: var(--white-25) !important;
+      margin-bottom: 1rem !important;
+    }
+
+    /* Read More Button */
     .article-card a {
       font-family: 'Montserrat', sans-serif;
-      background: #001F3F;
-      color: white;
+      background: var(--navy);
+      color: var(--white);
       padding: 8px 16px;
+      border: 1px solid rgba(0, 49, 102, 0.4);
       border-radius: 4px;
       text-decoration: none;
       display: inline-block;
       margin-top: auto;
       font-weight: 500;
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      transition: background-color 0.2s;
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
       text-align: center;
+      transition: background 0.3s var(--ease), border-color 0.3s var(--ease);
     }
-    
+
     .article-card a:hover {
-      background: #00305a;
+      background: var(--navy-mid);
+      border-color: rgba(0, 49, 102, 0.6);
     }
-    
+
+    /* Loading / Error */
     .loading, .error-message {
       text-align: center;
       padding: 40px;
-      background: white;
+      background: var(--black-card);
+      border: 1px solid var(--white-06);
       border-radius: 4px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      font-family: 'Pp Eiko Thin', serif;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 300;
+      font-size: 1rem;
+      color: var(--white-40);
       width: 100%;
     }
-    
+
     .error-message {
       color: #e74c3c;
     }
-    
+
+    /* Navigation Arrows */
     .nav-arrow {
       position: absolute;
       top: 50%;
@@ -194,64 +194,63 @@
       justify-content: center;
       cursor: pointer;
       z-index: 10;
-      transition: opacity 0.2s ease;
+      transition: opacity 0.3s var(--ease);
       background: transparent;
       border-radius: 0;
-      opacity: 0.6;
+      opacity: 0.5;
     }
-    
+
     .nav-arrow:hover {
       opacity: 1;
     }
-    
-    .prev-arrow {
-      left: 0;
-    }
-    
-    .next-arrow {
-      right: 0;
-    }
-    
+
+    .prev-arrow { left: 0; }
+    .next-arrow { right: 0; }
+
     .nav-arrow.disabled {
-      opacity: 0.3;
+      opacity: 0.15;
       cursor: not-allowed;
     }
-    
-    /* Update the arrow SVGs for a more professional look */
+
     .nav-arrow svg {
       width: 30px;
       height: 30px;
-      fill: #001F3F;
-      stroke: #001F3F;
+      fill: var(--white-60);
+      stroke: var(--white-60);
       stroke-width: 0.5;
     }
-    
-    /* Responsive adjustments */
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .article-card {
+        min-width: calc(50% - 20px);
+        flex: 0 0 calc(50% - 20px);
+        max-width: calc(50% - 20px);
+      }
+      .carousel-container {
+        padding: 0 40px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .article-card {
+        min-width: 100%;
+        flex: 0 0 100%;
+        max-width: 100%;
+      }
+      .carousel-container {
+        padding: 0 30px;
+      }
+      .nav-arrow svg {
+        width: 24px;
+        height: 24px;
+      }
+    }
+
     @media (max-width: 768px) {
       body {
         padding: 15px;
       }
-      
-      .nav-arrow {
-        width: 40px;
-        height: 40px;
-      }
-    }
-    
-    /* Add a title to match the original design */
-    .section-title {
-      font-family: 'Pp Eiko Thin', serif;
-      text-align: center;
-      font-size: 2.5rem;
-      margin-bottom: 30px;
-      font-weight: 200;
-      color: #333;
-    }
-    
-    .published-info {
-      font-size: 0.7rem;
-      color: #aaa;
-      margin-bottom: 1rem;
     }
   </style>
 </head>
@@ -260,7 +259,7 @@
     <div id="mediumRepeater">
       <div class="loading">Loading latest articles...</div>
     </div>
-    
+
     <div class="nav-arrow prev-arrow" id="prevArrow">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
@@ -277,50 +276,42 @@
     const feedURL = "https://medium.com/feed/@jackgreencrypto";
     const api = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(feedURL);
 
-    // Function to sanitize URLs (some Medium image URLs might be malformed)
     function sanitizeUrl(url) {
       if (!url) return '';
-      // Fix common issues with Medium image URLs
       return url.replace(/^\/\//, 'https://');
     }
-    
-    // Carousel navigation variables
+
     let currentPosition = 0;
     let totalItems = 0;
     let visibleItems = 3;
-    
-    // Initialize navigation
+
     function initNavigation() {
       const prevArrow = document.getElementById('prevArrow');
       const nextArrow = document.getElementById('nextArrow');
-      
-      // Initially hide prev arrow (we start at the beginning)
+
       prevArrow.classList.add('disabled');
-      
-      // Set up event listeners
+
       prevArrow.addEventListener('click', () => {
         if (currentPosition > 0) {
           currentPosition--;
           updateCarouselPosition();
         }
       });
-      
+
       nextArrow.addEventListener('click', () => {
         if (currentPosition < totalItems - visibleItems) {
           currentPosition++;
           updateCarouselPosition();
         }
       });
-      
-      // Update visible items based on screen size
+
       updateVisibleItems();
       window.addEventListener('resize', () => {
         updateVisibleItems();
         updateCarouselPosition();
       });
     }
-    
-    // Update how many items are visible based on screen width
+
     function updateVisibleItems() {
       if (window.innerWidth <= 640) {
         visibleItems = 1;
@@ -329,8 +320,7 @@
       } else {
         visibleItems = 3;
       }
-      
-      // Update arrow state based on total items
+
       const nextArrow = document.getElementById('nextArrow');
       if (totalItems <= visibleItems) {
         nextArrow.classList.add('disabled');
@@ -338,22 +328,18 @@
         nextArrow.classList.remove('disabled');
       }
     }
-    
-    // Update carousel position
+
     function updateCarouselPosition() {
       const container = document.getElementById('mediumRepeater');
       const prevArrow = document.getElementById('prevArrow');
       const nextArrow = document.getElementById('nextArrow');
-      
-      // Calculate width including gap
+
       const cardWidth = container.children[0].offsetWidth;
-      const gapWidth = 40; // matches the gap in CSS
+      const gapWidth = 40;
       const moveAmount = cardWidth + gapWidth;
-      
-      // Move the carousel
+
       container.style.transform = `translateX(-${currentPosition * moveAmount}px)`;
-      
-      // Update arrow states
+
       prevArrow.classList.toggle('disabled', currentPosition === 0);
       nextArrow.classList.toggle('disabled', currentPosition >= totalItems - visibleItems);
     }
@@ -367,11 +353,10 @@
         if (data.status !== 'ok') {
           throw new Error('Feed error: ' + data.message);
         }
-        
-        // Get all items from the feed
+
         const items = data.items;
         totalItems = items.length;
-        
+
         const container = document.getElementById('mediumRepeater');
         container.innerHTML = "";
 
@@ -380,7 +365,6 @@
           return;
         }
 
-        // Process all articles, not just the first 3
         items.forEach(item => {
           const title = item.title;
           const link = item.link;
@@ -394,7 +378,6 @@
           });
           const daysAgo = Math.floor((new Date() - pubDate) / (1000 * 60 * 60 * 24));
 
-          // Extract image with fallback handling
           let image = '';
           try {
             const tempDiv = document.createElement("div");
@@ -419,19 +402,15 @@
           `;
           container.appendChild(card);
         });
-        
-        // Initialize navigation after articles are loaded
+
         initNavigation();
-        
-        // Set initial container width to show only the specified number of articles
         updateVisibleItems();
       })
       .catch(err => {
-        document.getElementById('mediumRepeater').innerHTML = 
+        document.getElementById('mediumRepeater').innerHTML =
           "<div class='error-message'>Failed to load articles. Please try again later.</div>";
         console.error("RSS2JSON error:", err);
-        
-        // Hide navigation arrows in case of error
+
         document.getElementById('prevArrow').style.display = 'none';
         document.getElementById('nextArrow').style.display = 'none';
       });
