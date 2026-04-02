@@ -36,16 +36,27 @@
 
     body { padding: 0; }
 
-    /* Grid layout — 4 equal columns, full width */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.25rem;
+    /* ── Carousel wrapper ── */
+    .carousel {
+      position: relative;
       width: 100%;
-      padding: 0 0 1rem;
     }
 
-    /* Cards */
+    .track-clip {
+      overflow: hidden;
+      padding: 4px 0 8px;
+    }
+
+    .track {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      grid-auto-flow: column;
+      grid-auto-columns: calc(25% - 15px);
+      gap: 1.1rem 1.25rem;
+      transition: transform 0.55s var(--ease);
+    }
+
+    /* ── Cards ── */
     .card {
       background: var(--card);
       border: 1px solid var(--white-06);
@@ -57,7 +68,7 @@
     }
 
     .card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-3px);
       border-color: var(--border);
       box-shadow: 0 8px 24px rgba(0,0,0,0.4);
     }
@@ -75,10 +86,10 @@
       transition: transform 0.5s var(--ease);
     }
 
-    .card:hover .card-img img { transform: scale(1.05); }
+    .card:hover .card-img img { transform: scale(1.04); }
 
     .card-body {
-      padding: 1rem 1.1rem 1.2rem;
+      padding: 0.85rem 1rem 1rem;
       display: flex;
       flex-direction: column;
       flex: 1;
@@ -87,9 +98,9 @@
     .card-body h3 {
       font-family: 'Cormorant Garamond', Georgia, serif;
       font-weight: 300;
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       line-height: 1.3;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
       color: var(--white);
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -97,49 +108,59 @@
       overflow: hidden;
     }
 
-    .card-body .desc {
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 0.85rem;
-      font-weight: 300;
-      color: var(--white-40);
-      line-height: 1.5;
-      margin-bottom: 0.8rem;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
     .card-body .meta {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.58rem;
+      font-size: 0.55rem;
       letter-spacing: 0.06em;
       color: var(--white-25);
-      margin-bottom: 0.8rem;
-    }
-
-    .card-body .btn {
-      font-family: 'Montserrat', sans-serif;
-      background: var(--navy);
-      color: var(--white);
-      padding: 7px 14px;
-      border: 1px solid rgba(0,49,102,0.4);
-      border-radius: 4px;
-      text-decoration: none;
-      display: inline-block;
       margin-top: auto;
-      font-weight: 500;
-      font-size: 0.72rem;
-      letter-spacing: 0.04em;
-      text-align: center;
-      transition: background 0.3s var(--ease);
     }
 
-    .card-body .btn:hover { background: var(--navy-mid); }
+    /* Entire card is clickable */
+    .card { cursor: pointer; text-decoration: none; }
 
-    /* View all link */
-    .view-all {
-      padding: 0.6rem 0 0;
+    /* ── Bottom bar: arrows + view all ── */
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.7rem 0 0;
+    }
+
+    .arrows {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .arrow {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: var(--card);
+      border: 1px solid var(--white-06);
+      border-radius: 4px;
+      opacity: 0.6;
+      transition: opacity 0.3s var(--ease), border-color 0.3s var(--ease);
+    }
+
+    .arrow:hover {
+      opacity: 1;
+      border-color: var(--border);
+    }
+
+    .arrow[disabled] {
+      opacity: 0.15;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .arrow svg {
+      width: 18px;
+      height: 18px;
+      fill: var(--white-60);
     }
 
     .view-all a {
@@ -147,7 +168,7 @@
       align-items: center;
       gap: 0.35rem;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       font-weight: 400;
       letter-spacing: 0.08em;
       color: var(--text-blue);
@@ -157,7 +178,34 @@
 
     .view-all a:hover { color: var(--white); }
 
-    /* Status messages */
+    /* ── Dots ── */
+    .dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--white-25);
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s var(--ease), transform 0.3s var(--ease);
+      padding: 0;
+    }
+
+    .dot.active {
+      background: var(--text-blue);
+      transform: scale(1.3);
+    }
+
+    .dot:hover:not(.active) {
+      background: var(--white-40);
+    }
+
+    /* ── Status messages ── */
     .msg {
       text-align: center;
       padding: 40px;
@@ -167,47 +215,115 @@
       font-weight: 300;
       color: var(--white-40);
       grid-column: 1 / -1;
+      grid-row: 1 / -1;
     }
 
     .msg--err { color: #e74c3c; }
 
-    /* Responsive */
+    /* ── Responsive ── */
     @media (max-width: 960px) {
-      .grid {
-        grid-template-columns: repeat(2, 1fr);
+      .track {
+        grid-auto-columns: calc(50% - 10px);
       }
     }
 
     @media (max-width: 540px) {
-      .grid {
-        grid-template-columns: 1fr;
+      .track {
+        grid-template-rows: 1fr;
+        grid-auto-columns: 100%;
       }
     }
   </style>
 </head>
 <body>
-  <div class="grid" id="grid">
-    <div class="msg">Loading latest articles...</div>
+  <div class="carousel">
+    <div class="track-clip">
+      <div class="track" id="track">
+        <div class="msg">Loading latest articles...</div>
+      </div>
+    </div>
   </div>
 
-  <div class="view-all">
-    <a href="https://medium.com/@jackgreencrypto" target="_blank" rel="noopener noreferrer">
-      Read All Articles &rsaquo;
-    </a>
+  <div class="controls">
+    <div class="arrows">
+      <button class="arrow" id="prev" disabled aria-label="Previous">
+        <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+      </button>
+      <button class="arrow" id="next" disabled aria-label="Next">
+        <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+      </button>
+      <div class="dots" id="dots"></div>
+    </div>
+    <div class="view-all">
+      <a href="https://medium.com/@jackgreencrypto" target="_blank" rel="noopener noreferrer">
+        Read All Articles &rsaquo;
+      </a>
+    </div>
   </div>
 
   <script>
     const FEED = 'https://medium.com/feed/@jackgreencrypto';
     const API  = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(FEED);
-    const grid = document.getElementById('grid');
 
-    function sanitize(url) {
-      return url ? url.replace(/^\/\//, 'https://') : '';
+    const track = document.getElementById('track');
+    const prev  = document.getElementById('prev');
+    const next  = document.getElementById('next');
+    const dotsC = document.getElementById('dots');
+
+    let page = 0, totalPages = 0;
+
+    /* How many columns are visible at once */
+    function getVisible() {
+      const w = window.innerWidth;
+      return w <= 540 ? 1 : w <= 960 ? 2 : 4;
     }
+
+    /* How many rows */
+    function getRows() {
+      return window.innerWidth <= 540 ? 1 : 2;
+    }
+
+    function slide() {
+      const visible = getVisible();
+      const rows = getRows();
+      const cardsPerPage = visible * rows;
+      const totalCards = track.children.length;
+      totalPages = Math.ceil(totalCards / cardsPerPage);
+
+      /* Clamp page */
+      if (page >= totalPages) page = totalPages - 1;
+      if (page < 0) page = 0;
+
+      /* Calculate offset: move by `visible` columns per page */
+      const card = track.children[0];
+      if (!card) return;
+      const gap = parseFloat(getComputedStyle(track).columnGap) || 20;
+      const colWidth = card.offsetWidth + gap;
+      const offset = page * visible * colWidth;
+
+      track.style.transform = 'translateX(-' + offset + 'px)';
+      prev.disabled = page === 0;
+      next.disabled = page >= totalPages - 1;
+
+      /* Update dots */
+      dotsC.innerHTML = '';
+      for (let i = 0; i < totalPages; i++) {
+        const dot = document.createElement('button');
+        dot.className = 'dot' + (i === page ? ' active' : '');
+        dot.setAttribute('aria-label', 'Page ' + (i + 1));
+        dot.addEventListener('click', () => { page = i; slide(); });
+        dotsC.appendChild(dot);
+      }
+    }
+
+    prev.addEventListener('click', () => { if (page > 0) { page--; slide(); } });
+    next.addEventListener('click', () => { if (page < totalPages - 1) { page++; slide(); } });
+
+    window.addEventListener('resize', () => { slide(); });
 
     function extractImg(html) {
       const m = html.match(/<img[^>]+src=["']([^"']+)/);
-      return m ? sanitize(m[1]) : '';
+      return m ? (m[1].replace(/^\/\//, 'https://')) : '';
     }
 
     fetch(API)
@@ -215,36 +331,38 @@
       .then(data => {
         if (data.status !== 'ok') throw Error(data.message);
 
-        const items = data.items.slice(0, 4);
-        grid.innerHTML = '';
+        const items = data.items;
+        track.innerHTML = '';
 
         if (!items.length) {
-          grid.innerHTML = '<div class="msg">No articles found.</div>';
+          track.innerHTML = '<div class="msg">No articles found.</div>';
           return;
         }
 
         items.forEach(item => {
-          const desc = item.description.replace(/<[^>]*>/g, '').slice(0, 140);
           const date = new Date(item.pubDate);
           const fmt  = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
           const days = Math.floor((Date.now() - date) / 864e5);
           const img  = extractImg(item.description);
 
-          const el = document.createElement('div');
+          const el = document.createElement('a');
           el.className = 'card';
+          el.href = item.link;
+          el.target = '_blank';
+          el.rel = 'noopener noreferrer';
           el.innerHTML =
             (img ? '<div class="card-img"><img src="' + img + '" alt="" loading="lazy"></div>' : '') +
             '<div class="card-body">' +
               '<h3>' + item.title + '</h3>' +
-              '<p class="desc">' + desc + '</p>' +
               '<p class="meta">' + fmt + ' &middot; ' + days + 'd ago</p>' +
-              '<a class="btn" href="' + item.link + '" target="_blank" rel="noopener">Read more</a>' +
             '</div>';
-          grid.appendChild(el);
+          track.appendChild(el);
         });
+
+        slide();
       })
       .catch(() => {
-        grid.innerHTML = '<div class="msg msg--err">Failed to load articles.</div>';
+        track.innerHTML = '<div class="msg msg--err">Failed to load articles.</div>';
       });
   </script>
 </body>
