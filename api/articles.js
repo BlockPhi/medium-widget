@@ -4,8 +4,8 @@ const redis = Redis.fromEnv();
 
 const FEED_URL = 'https://medium.com/feed/@jackgreencrypto';
 const RSS_API = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(FEED_URL);
-const CACHE_KEY = 'medium-articles-v4';
-const SUMMARY_PREFIX = 'ai3:';
+const CACHE_KEY = 'medium-articles-v5';
+const SUMMARY_PREFIX = 'ai4:';
 const CACHE_TTL = 60 * 60;
 
 /**
@@ -90,7 +90,7 @@ async function callClaude(prompt) {
 async function generateSummary(title, content) {
   const text = stripHtml(content).substring(0, 3000);
   return callClaude(
-    'Summarize this article in exactly 2-3 concise sentences (max 200 characters total). Be specific about the key insight or thesis. No filler, no "this article discusses". Write as if for a financial professional.\n\nTitle: ' + title + '\n\nContent: ' + text
+    'Write a 1-sentence summary of this article in under 100 characters. Be specific about the key thesis. No filler. Write for a financial professional.\n\nTitle: ' + title + '\n\nContent: ' + text
   );
 }
 
@@ -137,7 +137,7 @@ async function getArticlesWithSummaries(forceRefresh = false) {
       summary: summary,
       author: {
         name: 'Jack',
-        avatar: 'https://www.blockphi.com/images/Jack.jpg'
+        avatar: '/Jack.jpg'
       }
     });
   }
