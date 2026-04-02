@@ -34,29 +34,19 @@
       line-height: 1.5;
     }
 
-    body { padding: 10px 0 20px; }
+    body { padding: 0; }
 
-    /* Carousel wrapper */
-    .carousel {
-      position: relative;
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 0 50px;
-    }
-
-    .track-clip { overflow: hidden; }
-
-    .track {
-      display: flex;
-      gap: 32px;
-      padding: 10px 0 16px;
-      transition: transform 0.5s var(--ease);
+    /* Grid layout — 4 equal columns, full width */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      width: 100%;
+      padding: 0 0 1rem;
     }
 
     /* Cards */
     .card {
-      flex: 0 0 calc(33.333% - 22px);
-      max-width: calc(33.333% - 22px);
       background: var(--card);
       border: 1px solid var(--white-06);
       border-radius: 4px;
@@ -73,7 +63,7 @@
     }
 
     .card-img {
-      height: 160px;
+      aspect-ratio: 16 / 9;
       overflow: hidden;
       flex-shrink: 0;
     }
@@ -88,7 +78,7 @@
     .card:hover .card-img img { transform: scale(1.05); }
 
     .card-body {
-      padding: 20px;
+      padding: 1rem 1.1rem 1.2rem;
       display: flex;
       flex-direction: column;
       flex: 1;
@@ -97,41 +87,49 @@
     .card-body h3 {
       font-family: 'Cormorant Garamond', Georgia, serif;
       font-weight: 300;
-      font-size: 1.25rem;
+      font-size: 1.05rem;
       line-height: 1.3;
-      margin-bottom: 0.6rem;
+      margin-bottom: 0.5rem;
       color: var(--white);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
     .card-body .desc {
       font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 300;
       color: var(--white-40);
       line-height: 1.5;
-      margin-bottom: 1rem;
+      margin-bottom: 0.8rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
     .card-body .meta {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.6rem;
+      font-size: 0.58rem;
       letter-spacing: 0.06em;
       color: var(--white-25);
-      margin-bottom: 1rem;
+      margin-bottom: 0.8rem;
     }
 
     .card-body .btn {
       font-family: 'Montserrat', sans-serif;
       background: var(--navy);
       color: var(--white);
-      padding: 8px 16px;
+      padding: 7px 14px;
       border: 1px solid rgba(0,49,102,0.4);
       border-radius: 4px;
       text-decoration: none;
       display: inline-block;
       margin-top: auto;
       font-weight: 500;
-      font-size: 0.8rem;
+      font-size: 0.72rem;
       letter-spacing: 0.04em;
       text-align: center;
       transition: background 0.3s var(--ease);
@@ -139,40 +137,9 @@
 
     .card-body .btn:hover { background: var(--navy-mid); }
 
-    /* Arrows */
-    .arrow {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 10;
-      background: transparent;
-      border: none;
-      opacity: 0.5;
-      transition: opacity 0.3s var(--ease);
-    }
-
-    .arrow:hover { opacity: 1; }
-    .arrow--prev { left: 6px; }
-    .arrow--next { right: 6px; }
-    .arrow[disabled] { opacity: 0.12; cursor: default; pointer-events: none; }
-
-    .arrow svg {
-      width: 28px;
-      height: 28px;
-      fill: var(--white-60);
-    }
-
     /* View all link */
     .view-all {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 8px 50px 0;
+      padding: 0.6rem 0 0;
     }
 
     .view-all a {
@@ -199,40 +166,28 @@
       border-radius: 4px;
       font-weight: 300;
       color: var(--white-40);
-      width: 100%;
+      grid-column: 1 / -1;
     }
 
     .msg--err { color: #e74c3c; }
 
     /* Responsive */
-    @media (max-width: 1024px) {
-      .card {
-        flex: 0 0 calc(50% - 16px);
-        max-width: calc(50% - 16px);
+    @media (max-width: 960px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
       }
-      .carousel, .view-all { padding-left: 40px; padding-right: 40px; }
     }
 
-    @media (max-width: 640px) {
-      .card { flex: 0 0 100%; max-width: 100%; }
-      .carousel, .view-all { padding-left: 30px; padding-right: 30px; }
-      .arrow svg { width: 22px; height: 22px; }
+    @media (max-width: 540px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="carousel">
-    <div class="track-clip">
-      <div class="track" id="track">
-        <div class="msg">Loading latest articles...</div>
-      </div>
-    </div>
-    <button class="arrow arrow--prev" id="prev" disabled aria-label="Previous">
-      <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-    </button>
-    <button class="arrow arrow--next" id="next" disabled aria-label="Next">
-      <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-    </button>
+  <div class="grid" id="grid">
+    <div class="msg">Loading latest articles...</div>
   </div>
 
   <div class="view-all">
@@ -244,35 +199,7 @@
   <script>
     const FEED = 'https://medium.com/feed/@jackgreencrypto';
     const API  = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(FEED);
-
-    const track = document.getElementById('track');
-    const prev  = document.getElementById('prev');
-    const next  = document.getElementById('next');
-
-    let pos = 0, total = 0, visible = 3;
-
-    function getVisible() {
-      const w = window.innerWidth;
-      return w <= 640 ? 1 : w <= 1024 ? 2 : 3;
-    }
-
-    function slide() {
-      const card = track.children[0];
-      if (!card) return;
-      const gap = 32;
-      track.style.transform = 'translateX(-' + pos * (card.offsetWidth + gap) + 'px)';
-      prev.disabled = pos === 0;
-      next.disabled = pos >= total - visible;
-    }
-
-    prev.addEventListener('click', () => { if (pos > 0) { pos--; slide(); } });
-    next.addEventListener('click', () => { if (pos < total - visible) { pos++; slide(); } });
-
-    window.addEventListener('resize', () => {
-      visible = getVisible();
-      if (pos > total - visible) pos = Math.max(0, total - visible);
-      slide();
-    });
+    const grid = document.getElementById('grid');
 
     function sanitize(url) {
       return url ? url.replace(/^\/\//, 'https://') : '';
@@ -288,17 +215,16 @@
       .then(data => {
         if (data.status !== 'ok') throw Error(data.message);
 
-        const items = data.items;
-        total = items.length;
-        track.innerHTML = '';
+        const items = data.items.slice(0, 4);
+        grid.innerHTML = '';
 
         if (!items.length) {
-          track.innerHTML = '<div class="msg">No articles found.</div>';
+          grid.innerHTML = '<div class="msg">No articles found.</div>';
           return;
         }
 
         items.forEach(item => {
-          const desc = item.description.replace(/<[^>]*>/g, '').slice(0, 180) + '...';
+          const desc = item.description.replace(/<[^>]*>/g, '').slice(0, 140);
           const date = new Date(item.pubDate);
           const fmt  = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
           const days = Math.floor((Date.now() - date) / 864e5);
@@ -307,23 +233,18 @@
           const el = document.createElement('div');
           el.className = 'card';
           el.innerHTML =
-            (img ? '<div class="card-img"><img src="' + img + '" alt="' + item.title + '" loading="lazy"></div>' : '') +
+            (img ? '<div class="card-img"><img src="' + img + '" alt="" loading="lazy"></div>' : '') +
             '<div class="card-body">' +
               '<h3>' + item.title + '</h3>' +
               '<p class="desc">' + desc + '</p>' +
-              '<p class="meta">Published: ' + fmt + ' &middot; ' + days + ' days ago</p>' +
+              '<p class="meta">' + fmt + ' &middot; ' + days + 'd ago</p>' +
               '<a class="btn" href="' + item.link + '" target="_blank" rel="noopener">Read more</a>' +
             '</div>';
-          track.appendChild(el);
+          grid.appendChild(el);
         });
-
-        visible = getVisible();
-        slide();
       })
       .catch(() => {
-        track.innerHTML = '<div class="msg msg--err">Failed to load articles.</div>';
-        prev.style.display = 'none';
-        next.style.display = 'none';
+        grid.innerHTML = '<div class="msg msg--err">Failed to load articles.</div>';
       });
   </script>
 </body>
