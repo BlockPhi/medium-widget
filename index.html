@@ -339,7 +339,19 @@
           return;
         }
 
-        items.forEach(item => {
+        /* Reorder for column-flow grid: top row should be newest (1,2,3,4), bottom row next (5,6,7,8).
+           Grid fills column-by-column, so we interleave: [0,4,1,5,2,6,3,7] → visual rows read L→R. */
+        const rows = window.innerWidth <= 540 ? 1 : 2;
+        const half = Math.ceil(items.length / rows);
+        const reordered = [];
+        for (let col = 0; col < half; col++) {
+          for (let row = 0; row < rows; row++) {
+            const idx = row * half + col;
+            if (idx < items.length) reordered.push(items[idx]);
+          }
+        }
+
+        reordered.forEach(item => {
           const date = new Date(item.pubDate);
           const fmt  = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
           const days = Math.floor((Date.now() - date) / 864e5);
