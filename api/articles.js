@@ -4,8 +4,8 @@ const redis = Redis.fromEnv();
 
 const FEED_URL = 'https://medium.com/feed/@jackgreencrypto';
 const RSS_API = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(FEED_URL);
-const CACHE_KEY = 'medium-articles-v6';
-const SUMMARY_PREFIX = 'ai4:';
+const CACHE_KEY = 'medium-articles-v7';
+const SUMMARY_PREFIX = 'ai5:';
 const CACHE_TTL = 60 * 60;
 
 /**
@@ -108,7 +108,9 @@ async function getArticlesWithSummaries(forceRefresh = false) {
   const articles = [];
 
   for (const item of data.items) {
-    const articleId = Buffer.from(item.link).toString('base64').substring(0, 40);
+    /* Use slug from URL as unique ID (avoids base64 truncation collisions) */
+    const slug = item.link.split('/').filter(Boolean).pop().split('?')[0];
+    const articleId = slug.substring(0, 60);
     const summaryKey = SUMMARY_PREFIX + articleId;
 
     let summary = forceRefresh ? null : await redis.get(summaryKey);
