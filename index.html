@@ -4,415 +4,326 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="description" content="Latest research articles from BlockPhi Capital">
-  <meta name="author" content="BlockPhi Capital">
-  <title>BlockPhi Capital — Research Articles</title>
+  <title>BlockPhi Capital — Research</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Montserrat:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Montserrat:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
   <style>
-    /* ═══════════════════════════════════════════
-       BlockPhi Capital — Medium Widget
-       Design System: Dark base, navy accents
-       Fonts: Cormorant Garamond / Montserrat / JetBrains Mono
-       ═══════════════════════════════════════════ */
-
     :root {
       --black: #0a0a0a;
-      --black-card: #111111;
+      --card: #111111;
       --navy: #001F3F;
       --navy-mid: #003166;
       --text-blue: #4A8EC9;
       --white: #fcfcfc;
-      --white-60: rgba(252, 252, 252, 0.6);
-      --white-40: rgba(252, 252, 252, 0.4);
-      --white-25: rgba(252, 252, 252, 0.25);
-      --white-12: rgba(252, 252, 252, 0.12);
-      --white-06: rgba(252, 252, 252, 0.06);
-      --border: rgba(0, 31, 63, 0.3);
+      --white-60: rgba(252,252,252,0.6);
+      --white-40: rgba(252,252,252,0.4);
+      --white-25: rgba(252,252,252,0.25);
+      --white-06: rgba(252,252,252,0.06);
+      --border: rgba(0,31,63,0.3);
       --ease: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    *,
-    *::before,
-    *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    body {
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      padding: 20px 15px;
+    html, body {
+      overflow: hidden;
       background: transparent;
       color: var(--white);
+      font-family: 'Cormorant Garamond', Georgia, serif;
       line-height: 1.5;
-      position: relative;
     }
 
-    /* Carousel */
-    .carousel-container {
+    body { padding: 10px 0 20px; }
+
+    /* Carousel wrapper */
+    .carousel {
       position: relative;
       max-width: 1000px;
       margin: 0 auto;
-      overflow: hidden;
       padding: 0 50px;
-      background: transparent;
     }
 
-    #mediumRepeater {
+    .track-clip { overflow: hidden; }
+
+    .track {
       display: flex;
+      gap: 32px;
+      padding: 10px 0 16px;
       transition: transform 0.5s var(--ease);
-      gap: 40px;
-      padding: 20px 0;
-      align-items: stretch;
     }
 
     /* Cards */
-    .article-card {
-      background: var(--black-card);
+    .card {
+      flex: 0 0 calc(33.333% - 22px);
+      max-width: calc(33.333% - 22px);
+      background: var(--card);
       border: 1px solid var(--white-06);
       border-radius: 4px;
       overflow: hidden;
-      transition: transform 0.35s var(--ease), border-color 0.35s var(--ease), box-shadow 0.35s var(--ease);
       display: flex;
       flex-direction: column;
-      min-width: calc(33.333% - 27px);
-      flex: 0 0 calc(33.333% - 27px);
-      max-width: calc(33.333% - 27px);
+      transition: transform 0.35s var(--ease), border-color 0.35s var(--ease), box-shadow 0.35s var(--ease);
     }
 
-    .article-card:hover {
-      transform: translateY(-5px);
+    .card:hover {
+      transform: translateY(-4px);
       border-color: var(--border);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
     }
 
-    /* Card Image */
-    .img-container {
-      width: 100%;
+    .card-img {
       height: 160px;
       overflow: hidden;
-      position: relative;
       flex-shrink: 0;
     }
 
-    .img-container img {
+    .card-img img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       transition: transform 0.5s var(--ease);
     }
 
-    .article-card:hover .img-container img {
-      transform: scale(1.05);
-    }
+    .card:hover .card-img img { transform: scale(1.05); }
 
-    /* Card Content */
-    .card-content {
+    .card-body {
       padding: 20px;
       display: flex;
       flex-direction: column;
       flex: 1;
     }
 
-    .article-card h3 {
+    .card-body h3 {
       font-family: 'Cormorant Garamond', Georgia, serif;
       font-weight: 300;
-      font-size: 1.3rem;
-      margin-bottom: 0.7rem;
-      margin-top: 0;
+      font-size: 1.25rem;
       line-height: 1.3;
+      margin-bottom: 0.6rem;
       color: var(--white);
     }
 
-    .article-card p {
+    .card-body .desc {
       font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
+      font-weight: 300;
       color: var(--white-40);
-      margin-bottom: 1.2rem;
       line-height: 1.5;
+      margin-bottom: 1rem;
     }
 
-    .published-info {
+    .card-body .meta {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.62rem !important;
+      font-size: 0.6rem;
       letter-spacing: 0.06em;
-      color: var(--white-25) !important;
-      margin-bottom: 1rem !important;
+      color: var(--white-25);
+      margin-bottom: 1rem;
     }
 
-    /* Read More Button */
-    .article-card a {
+    .card-body .btn {
       font-family: 'Montserrat', sans-serif;
       background: var(--navy);
       color: var(--white);
       padding: 8px 16px;
-      border: 1px solid rgba(0, 49, 102, 0.4);
+      border: 1px solid rgba(0,49,102,0.4);
       border-radius: 4px;
       text-decoration: none;
       display: inline-block;
       margin-top: auto;
       font-weight: 500;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       letter-spacing: 0.04em;
       text-align: center;
-      transition: background 0.3s var(--ease), border-color 0.3s var(--ease);
+      transition: background 0.3s var(--ease);
     }
 
-    .article-card a:hover {
-      background: var(--navy-mid);
-      border-color: rgba(0, 49, 102, 0.6);
-    }
+    .card-body .btn:hover { background: var(--navy-mid); }
 
-    /* Loading / Error */
-    .loading, .error-message {
-      text-align: center;
-      padding: 40px;
-      background: var(--black-card);
-      border: 1px solid var(--white-06);
-      border-radius: 4px;
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      font-weight: 300;
-      font-size: 1rem;
-      color: var(--white-40);
-      width: 100%;
-    }
-
-    .error-message {
-      color: #e74c3c;
-    }
-
-    /* Navigation Arrows */
-    .nav-arrow {
+    /* Arrows */
+    .arrow {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       z-index: 10;
-      transition: opacity 0.3s var(--ease);
       background: transparent;
-      border-radius: 0;
+      border: none;
       opacity: 0.5;
+      transition: opacity 0.3s var(--ease);
     }
 
-    .nav-arrow:hover {
-      opacity: 1;
-    }
+    .arrow:hover { opacity: 1; }
+    .arrow--prev { left: 6px; }
+    .arrow--next { right: 6px; }
+    .arrow[disabled] { opacity: 0.12; cursor: default; pointer-events: none; }
 
-    .prev-arrow { left: 0; }
-    .next-arrow { right: 0; }
-
-    .nav-arrow.disabled {
-      opacity: 0.15;
-      cursor: not-allowed;
-    }
-
-    .nav-arrow svg {
-      width: 30px;
-      height: 30px;
+    .arrow svg {
+      width: 28px;
+      height: 28px;
       fill: var(--white-60);
-      stroke: var(--white-60);
-      stroke-width: 0.5;
     }
+
+    /* View all link */
+    .view-all {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 8px 50px 0;
+    }
+
+    .view-all a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      color: var(--text-blue);
+      text-decoration: none;
+      transition: color 0.3s var(--ease);
+    }
+
+    .view-all a:hover { color: var(--white); }
+
+    /* Status messages */
+    .msg {
+      text-align: center;
+      padding: 40px;
+      background: var(--card);
+      border: 1px solid var(--white-06);
+      border-radius: 4px;
+      font-weight: 300;
+      color: var(--white-40);
+      width: 100%;
+    }
+
+    .msg--err { color: #e74c3c; }
 
     /* Responsive */
     @media (max-width: 1024px) {
-      .article-card {
-        min-width: calc(50% - 20px);
-        flex: 0 0 calc(50% - 20px);
-        max-width: calc(50% - 20px);
+      .card {
+        flex: 0 0 calc(50% - 16px);
+        max-width: calc(50% - 16px);
       }
-      .carousel-container {
-        padding: 0 40px;
-      }
+      .carousel, .view-all { padding-left: 40px; padding-right: 40px; }
     }
 
     @media (max-width: 640px) {
-      .article-card {
-        min-width: 100%;
-        flex: 0 0 100%;
-        max-width: 100%;
-      }
-      .carousel-container {
-        padding: 0 30px;
-      }
-      .nav-arrow svg {
-        width: 24px;
-        height: 24px;
-      }
-    }
-
-    @media (max-width: 768px) {
-      body {
-        padding: 15px;
-      }
+      .card { flex: 0 0 100%; max-width: 100%; }
+      .carousel, .view-all { padding-left: 30px; padding-right: 30px; }
+      .arrow svg { width: 22px; height: 22px; }
     }
   </style>
 </head>
 <body>
-  <div class="carousel-container">
-    <div id="mediumRepeater">
-      <div class="loading">Loading latest articles...</div>
+  <div class="carousel">
+    <div class="track-clip">
+      <div class="track" id="track">
+        <div class="msg">Loading latest articles...</div>
+      </div>
     </div>
+    <button class="arrow arrow--prev" id="prev" disabled aria-label="Previous">
+      <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+    </button>
+    <button class="arrow arrow--next" id="next" disabled aria-label="Next">
+      <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+    </button>
+  </div>
 
-    <div class="nav-arrow prev-arrow" id="prevArrow">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-      </svg>
-    </div>
-    <div class="nav-arrow next-arrow" id="nextArrow">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-      </svg>
-    </div>
+  <div class="view-all">
+    <a href="https://medium.com/@jackgreencrypto" target="_blank" rel="noopener noreferrer">
+      Read All Articles &rsaquo;
+    </a>
   </div>
 
   <script>
-    const feedURL = "https://medium.com/feed/@jackgreencrypto";
-    const api = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(feedURL);
+    const FEED = 'https://medium.com/feed/@jackgreencrypto';
+    const API  = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(FEED);
 
-    function sanitizeUrl(url) {
-      if (!url) return '';
-      return url.replace(/^\/\//, 'https://');
+    const track = document.getElementById('track');
+    const prev  = document.getElementById('prev');
+    const next  = document.getElementById('next');
+
+    let pos = 0, total = 0, visible = 3;
+
+    function getVisible() {
+      const w = window.innerWidth;
+      return w <= 640 ? 1 : w <= 1024 ? 2 : 3;
     }
 
-    let currentPosition = 0;
-    let totalItems = 0;
-    let visibleItems = 3;
-
-    function initNavigation() {
-      const prevArrow = document.getElementById('prevArrow');
-      const nextArrow = document.getElementById('nextArrow');
-
-      prevArrow.classList.add('disabled');
-
-      prevArrow.addEventListener('click', () => {
-        if (currentPosition > 0) {
-          currentPosition--;
-          updateCarouselPosition();
-        }
-      });
-
-      nextArrow.addEventListener('click', () => {
-        if (currentPosition < totalItems - visibleItems) {
-          currentPosition++;
-          updateCarouselPosition();
-        }
-      });
-
-      updateVisibleItems();
-      window.addEventListener('resize', () => {
-        updateVisibleItems();
-        updateCarouselPosition();
-      });
+    function slide() {
+      const card = track.children[0];
+      if (!card) return;
+      const gap = 32;
+      track.style.transform = 'translateX(-' + pos * (card.offsetWidth + gap) + 'px)';
+      prev.disabled = pos === 0;
+      next.disabled = pos >= total - visible;
     }
 
-    function updateVisibleItems() {
-      if (window.innerWidth <= 640) {
-        visibleItems = 1;
-      } else if (window.innerWidth <= 1024) {
-        visibleItems = 2;
-      } else {
-        visibleItems = 3;
-      }
+    prev.addEventListener('click', () => { if (pos > 0) { pos--; slide(); } });
+    next.addEventListener('click', () => { if (pos < total - visible) { pos++; slide(); } });
 
-      const nextArrow = document.getElementById('nextArrow');
-      if (totalItems <= visibleItems) {
-        nextArrow.classList.add('disabled');
-      } else {
-        nextArrow.classList.remove('disabled');
-      }
+    window.addEventListener('resize', () => {
+      visible = getVisible();
+      if (pos > total - visible) pos = Math.max(0, total - visible);
+      slide();
+    });
+
+    function sanitize(url) {
+      return url ? url.replace(/^\/\//, 'https://') : '';
     }
 
-    function updateCarouselPosition() {
-      const container = document.getElementById('mediumRepeater');
-      const prevArrow = document.getElementById('prevArrow');
-      const nextArrow = document.getElementById('nextArrow');
-
-      const cardWidth = container.children[0].offsetWidth;
-      const gapWidth = 40;
-      const moveAmount = cardWidth + gapWidth;
-
-      container.style.transform = `translateX(-${currentPosition * moveAmount}px)`;
-
-      prevArrow.classList.toggle('disabled', currentPosition === 0);
-      nextArrow.classList.toggle('disabled', currentPosition >= totalItems - visibleItems);
+    function extractImg(html) {
+      const m = html.match(/<img[^>]+src=["']([^"']+)/);
+      return m ? sanitize(m[1]) : '';
     }
 
-    fetch(api)
-      .then(res => {
-        if (!res.ok) throw new Error('Network response was not ok');
-        return res.json();
-      })
+    fetch(API)
+      .then(r => { if (!r.ok) throw Error(); return r.json(); })
       .then(data => {
-        if (data.status !== 'ok') {
-          throw new Error('Feed error: ' + data.message);
-        }
+        if (data.status !== 'ok') throw Error(data.message);
 
         const items = data.items;
-        totalItems = items.length;
+        total = items.length;
+        track.innerHTML = '';
 
-        const container = document.getElementById('mediumRepeater');
-        container.innerHTML = "";
-
-        if (items.length === 0) {
-          container.innerHTML = "<div class='error-message'>No articles found.</div>";
+        if (!items.length) {
+          track.innerHTML = '<div class="msg">No articles found.</div>';
           return;
         }
 
         items.forEach(item => {
-          const title = item.title;
-          const link = item.link;
-          const rawDesc = item.description;
-          const desc = rawDesc.replace(/<[^>]*>/g, '').slice(0, 180) + "...";
-          const pubDate = new Date(item.pubDate);
-          const formattedPubDate = pubDate.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "2-digit"
-          });
-          const daysAgo = Math.floor((new Date() - pubDate) / (1000 * 60 * 60 * 24));
+          const desc = item.description.replace(/<[^>]*>/g, '').slice(0, 180) + '...';
+          const date = new Date(item.pubDate);
+          const fmt  = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
+          const days = Math.floor((Date.now() - date) / 864e5);
+          const img  = extractImg(item.description);
 
-          let image = '';
-          try {
-            const tempDiv = document.createElement("div");
-            tempDiv.innerHTML = rawDesc;
-            const firstImg = tempDiv.querySelector("img");
-            image = firstImg ? sanitizeUrl(firstImg.src) : '';
-          } catch (e) {
-            console.warn('Error extracting image:', e);
-            image = '';
-          }
-
-          const card = document.createElement("div");
-          card.className = "article-card";
-          card.innerHTML = `
-            ${image ? `<div class="img-container"><img src="${image}" alt="${title}" loading="lazy"></div>` : ""}
-            <div class="card-content">
-              <h3>${title}</h3>
-              <p>${desc}</p>
-              <p class="published-info">Published: ${formattedPubDate} &middot; ${daysAgo} days ago</p>
-              <a href="${link}" target="_blank" rel="noopener">Read more</a>
-            </div>
-          `;
-          container.appendChild(card);
+          const el = document.createElement('div');
+          el.className = 'card';
+          el.innerHTML =
+            (img ? '<div class="card-img"><img src="' + img + '" alt="' + item.title + '" loading="lazy"></div>' : '') +
+            '<div class="card-body">' +
+              '<h3>' + item.title + '</h3>' +
+              '<p class="desc">' + desc + '</p>' +
+              '<p class="meta">Published: ' + fmt + ' &middot; ' + days + ' days ago</p>' +
+              '<a class="btn" href="' + item.link + '" target="_blank" rel="noopener">Read more</a>' +
+            '</div>';
+          track.appendChild(el);
         });
 
-        initNavigation();
-        updateVisibleItems();
+        visible = getVisible();
+        slide();
       })
-      .catch(err => {
-        document.getElementById('mediumRepeater').innerHTML =
-          "<div class='error-message'>Failed to load articles. Please try again later.</div>";
-        console.error("RSS2JSON error:", err);
-
-        document.getElementById('prevArrow').style.display = 'none';
-        document.getElementById('nextArrow').style.display = 'none';
+      .catch(() => {
+        track.innerHTML = '<div class="msg msg--err">Failed to load articles.</div>';
+        prev.style.display = 'none';
+        next.style.display = 'none';
       });
   </script>
 </body>
