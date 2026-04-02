@@ -28,11 +28,11 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     html, body {
-      overflow: hidden;
       background: transparent;
       color: var(--white);
       font-family: 'Cormorant Garamond', Georgia, serif;
       line-height: 1.5;
+      overflow-x: hidden;
     }
 
     body { padding: 0; }
@@ -114,11 +114,11 @@
       font-family: 'Montserrat', sans-serif;
       font-weight: 300;
       font-size: 0.58rem;
-      line-height: 1.45;
+      line-height: 1.5;
       color: var(--white-40);
       margin-bottom: 0.4rem;
       display: -webkit-box;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
@@ -159,7 +159,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0.7rem 0 0;
+      padding: 0.7rem 0 0.25rem;
     }
 
     .arrows {
@@ -297,11 +297,18 @@
   </div>
 
   <script>
+    /* ── Auto-resize: tell parent iframe our actual height ── */
+    function notifyHeight() {
+      var h = document.body.scrollHeight;
+      window.parent.postMessage({ type: 'mw-resize', height: h }, '*');
+    }
+
     /* ── API endpoints ── */
-    const AI_API  = '/api/articles';   /* Our serverless function with AI summaries */
+    const AI_API  = '/api/articles';
     const RSS_API = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent('https://medium.com/feed/@jackgreencrypto');
 
-    const AUTHOR_IMG = '/Jack.jpg';
+    /* Jack's headshot — served from this widget's own domain */
+    const AUTHOR_IMG = 'https://medium-widget.vercel.app/Jack.jpg';
     const AUTHOR_NAME = 'Jack';
 
     const track = document.getElementById('track');
@@ -348,6 +355,9 @@
         dot.addEventListener('click', () => { page = i; slide(); });
         dotsC.appendChild(dot);
       }
+
+      /* Notify parent of new height after render */
+      requestAnimationFrame(notifyHeight);
     }
 
     prev.addEventListener('click', () => { if (page > 0) { page--; slide(); } });
@@ -375,10 +385,10 @@
     function fallbackSummary(html) {
       const text = stripHtml(html).replace(/^Continue reading on Medium\s*»?\s*/i, '').trim();
       const sentences = text.match(/[^.!?]+[.!?]+/g);
-      if (!sentences || !sentences.length) return text.substring(0, 180).trim() + (text.length > 180 ? '...' : '');
+      if (!sentences || !sentences.length) return text.substring(0, 120).trim() + (text.length > 120 ? '...' : '');
       const meaningful = sentences.map(s => s.trim()).filter(s => s.length > 30 && !/^(continue reading|by |photo by |image |source:)/i.test(s));
       let summary = meaningful.slice(0, 1).join(' ').trim();
-      if (summary.length > 100) summary = summary.substring(0, 97).replace(/\s+\S*$/, '') + '...';
+      if (summary.length > 120) summary = summary.substring(0, 117).replace(/\s+\S*$/, '') + '...';
       return summary;
     }
 
@@ -438,7 +448,6 @@
         renderCards(data.items);
       })
       .catch(() => {
-        /* Fallback: direct RSS with client-side summary extraction */
         console.warn('AI API unavailable, falling back to RSS');
         fetch(RSS_API)
           .then(r => { if (!r.ok) throw Error(); return r.json(); })

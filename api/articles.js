@@ -4,7 +4,7 @@ const redis = Redis.fromEnv();
 
 const FEED_URL = 'https://medium.com/feed/@jackgreencrypto';
 const RSS_API = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(FEED_URL);
-const CACHE_KEY = 'medium-articles-v5';
+const CACHE_KEY = 'medium-articles-v6';
 const SUMMARY_PREFIX = 'ai4:';
 const CACHE_TTL = 60 * 60;
 
@@ -137,7 +137,7 @@ async function getArticlesWithSummaries(forceRefresh = false) {
       summary: summary,
       author: {
         name: 'Jack',
-        avatar: '/Jack.jpg'
+        avatar: 'https://medium-widget.vercel.app/Jack.jpg'
       }
     });
   }
