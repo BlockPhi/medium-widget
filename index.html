@@ -297,10 +297,10 @@
   </div>
 
   <script>
-    const FEED = 'https://medium.com/feed/@jackgreencrypto';
-    const API  = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(FEED);
+    /* ── API endpoints ── */
+    const AI_API  = '/api/articles';   /* Our serverless function with AI summaries */
+    const RSS_API = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent('https://medium.com/feed/@jackgreencrypto');
 
-    /* Jack's headshot — hosted on the main site */
     const AUTHOR_IMG = 'https://www.blockphi.com/images/Jack.jpg';
     const AUTHOR_NAME = 'Jack';
 
@@ -311,13 +311,11 @@
 
     let page = 0, totalPages = 0;
 
-    /* How many columns are visible at once */
     function getVisible() {
       const w = window.innerWidth;
       return w <= 540 ? 1 : w <= 960 ? 2 : 4;
     }
 
-    /* How many rows */
     function getRows() {
       return window.innerWidth <= 540 ? 1 : 2;
     }
@@ -329,11 +327,9 @@
       const totalCards = track.children.length;
       totalPages = Math.ceil(totalCards / cardsPerPage);
 
-      /* Clamp page */
       if (page >= totalPages) page = totalPages - 1;
       if (page < 0) page = 0;
 
-      /* Calculate offset: move by `visible` columns per page */
       const card = track.children[0];
       if (!card) return;
       const gap = parseFloat(getComputedStyle(track).columnGap) || 20;
@@ -344,7 +340,6 @@
       prev.disabled = page === 0;
       next.disabled = page >= totalPages - 1;
 
-      /* Update dots */
       dotsC.innerHTML = '';
       for (let i = 0; i < totalPages; i++) {
         const dot = document.createElement('button');
@@ -357,114 +352,115 @@
 
     prev.addEventListener('click', () => { if (page > 0) { page--; slide(); } });
     next.addEventListener('click', () => { if (page < totalPages - 1) { page++; slide(); } });
-
     window.addEventListener('resize', () => { slide(); });
 
+    /* ── Helpers for RSS fallback ── */
     function extractImg(html) {
       const m = html.match(/<img[^>]+src=["']([^"']+)/);
       return m ? (m[1].replace(/^\/\//, 'https://')) : '';
     }
 
-    /* Strip HTML tags and get plain text */
     function stripHtml(html) {
       const tmp = document.createElement('div');
       tmp.innerHTML = html;
       return tmp.textContent || tmp.innerText || '';
     }
 
-    /* Estimate read time from article content (words / 238 wpm avg) */
     function estimateReadTime(html) {
       const text = stripHtml(html);
       const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
-      const minutes = Math.max(1, Math.round(words / 238));
-      return minutes;
+      return Math.max(1, Math.round(words / 238));
     }
 
-    /* Generate a concise summary from article HTML content.
-       Extracts the first ~3 meaningful sentences, skipping headings and short fragments. */
-    function generateSummary(html) {
-      const text = stripHtml(html);
-
-      /* Remove the title if it appears at the start */
-      const cleaned = text.replace(/^Continue reading on Medium\s*»?\s*/i, '').trim();
-
-      /* Split into sentences */
-      const sentences = cleaned.match(/[^.!?]+[.!?]+/g);
-      if (!sentences || sentences.length === 0) {
-        /* Fallback: take first 180 chars */
-        return cleaned.substring(0, 180).trim() + (cleaned.length > 180 ? '...' : '');
-      }
-
-      /* Filter out very short fragments (headings, labels) and pick first 2-3 meaningful ones */
-      const meaningful = sentences
-        .map(s => s.trim())
-        .filter(s => s.length > 30 && !s.match(/^(continue reading|by |photo by |image |source:)/i));
-
-      const picked = meaningful.slice(0, 3);
-      let summary = picked.join(' ').trim();
-
-      /* Trim to ~200 chars max for compact display */
-      if (summary.length > 200) {
-        summary = summary.substring(0, 197).replace(/\s+\S*$/, '') + '...';
-      }
-
+    function fallbackSummary(html) {
+      const text = stripHtml(html).replace(/^Continue reading on Medium\s*»?\s*/i, '').trim();
+      const sentences = text.match(/[^.!?]+[.!?]+/g);
+      if (!sentences || !sentences.length) return text.substring(0, 180).trim() + (text.length > 180 ? '...' : '');
+      const meaningful = sentences.map(s => s.trim()).filter(s => s.length > 30 && !/^(continue reading|by |photo by |image |source:)/i.test(s));
+      let summary = meaningful.slice(0, 3).join(' ').trim();
+      if (summary.length > 200) summary = summary.substring(0, 197).replace(/\s+\S*$/, '') + '...';
       return summary;
     }
 
-    fetch(API)
-      .then(r => { if (!r.ok) throw Error(); return r.json(); })
+    /* ── Render cards ── */
+    function renderCards(items) {
+      track.innerHTML = '';
+      if (!items.length) {
+        track.innerHTML = '<div class="msg">No articles found.</div>';
+        return;
+      }
+
+      const rows = window.innerWidth <= 540 ? 1 : 2;
+      const half = Math.ceil(items.length / rows);
+      const reordered = [];
+      for (let col = 0; col < half; col++) {
+        for (let row = 0; row < rows; row++) {
+          const idx = row * half + col;
+          if (idx < items.length) reordered.push(items[idx]);
+        }
+      }
+
+      reordered.forEach(item => {
+        const date = new Date(item.pubDate);
+        const fmt = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
+        const img = item.image || '';
+        const readMin = item.readTime || 1;
+        const summary = item.summary || '';
+        const authorName = (item.author && item.author.name) || AUTHOR_NAME;
+        const authorAvatar = (item.author && item.author.avatar) || AUTHOR_IMG;
+
+        const el = document.createElement('a');
+        el.className = 'card';
+        el.href = item.link;
+        el.target = '_blank';
+        el.rel = 'noopener noreferrer';
+        el.innerHTML =
+          (img ? '<div class="card-img"><img src="' + img + '" alt="" loading="lazy"></div>' : '') +
+          '<div class="card-body">' +
+            '<h3>' + item.title + '</h3>' +
+            (summary ? '<p class="card-summary">' + summary + '</p>' : '') +
+            '<div class="card-footer">' +
+              '<img src="' + authorAvatar + '" alt="' + authorName + '" class="author-avatar" loading="lazy">' +
+              '<span class="meta">' + authorName + ' <span class="meta-sep">&middot;</span> ' + fmt + ' <span class="meta-sep">&middot;</span> ' + readMin + ' min read</span>' +
+            '</div>' +
+          '</div>';
+        track.appendChild(el);
+      });
+
+      slide();
+    }
+
+    /* ── Fetch: try AI API first, fall back to direct RSS ── */
+    fetch(AI_API)
+      .then(r => { if (!r.ok) throw Error('API unavailable'); return r.json(); })
       .then(data => {
         if (data.status !== 'ok') throw Error(data.message);
-
-        const items = data.items;
-        track.innerHTML = '';
-
-        if (!items.length) {
-          track.innerHTML = '<div class="msg">No articles found.</div>';
-          return;
-        }
-
-        /* Reorder for column-flow grid: top row should be newest (1,2,3,4), bottom row next (5,6,7,8).
-           Grid fills column-by-column, so we interleave: [0,4,1,5,2,6,3,7] → visual rows read L→R. */
-        const rows = window.innerWidth <= 540 ? 1 : 2;
-        const half = Math.ceil(items.length / rows);
-        const reordered = [];
-        for (let col = 0; col < half; col++) {
-          for (let row = 0; row < rows; row++) {
-            const idx = row * half + col;
-            if (idx < items.length) reordered.push(items[idx]);
-          }
-        }
-
-        reordered.forEach(item => {
-          const date = new Date(item.pubDate);
-          const fmt  = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
-          const readMin = estimateReadTime(item.description || item.content || '');
-          const summary = generateSummary(item.description || item.content || '');
-          const img  = extractImg(item.description);
-
-          const el = document.createElement('a');
-          el.className = 'card';
-          el.href = item.link;
-          el.target = '_blank';
-          el.rel = 'noopener noreferrer';
-          el.innerHTML =
-            (img ? '<div class="card-img"><img src="' + img + '" alt="" loading="lazy"></div>' : '') +
-            '<div class="card-body">' +
-              '<h3>' + item.title + '</h3>' +
-              (summary ? '<p class="card-summary">' + summary + '</p>' : '') +
-              '<div class="card-footer">' +
-                '<img src="' + AUTHOR_IMG + '" alt="' + AUTHOR_NAME + '" class="author-avatar" loading="lazy">' +
-                '<span class="meta">' + AUTHOR_NAME + ' <span class="meta-sep">&middot;</span> ' + fmt + ' <span class="meta-sep">&middot;</span> ' + readMin + ' min read</span>' +
-              '</div>' +
-            '</div>';
-          track.appendChild(el);
-        });
-
-        slide();
+        renderCards(data.items);
       })
       .catch(() => {
-        track.innerHTML = '<div class="msg msg--err">Failed to load articles.</div>';
+        /* Fallback: direct RSS with client-side summary extraction */
+        console.warn('AI API unavailable, falling back to RSS');
+        fetch(RSS_API)
+          .then(r => { if (!r.ok) throw Error(); return r.json(); })
+          .then(data => {
+            if (data.status !== 'ok') throw Error(data.message);
+            const items = data.items.map(item => {
+              const content = item.description || item.content || '';
+              return {
+                title: item.title,
+                link: item.link,
+                pubDate: item.pubDate,
+                image: extractImg(content),
+                readTime: estimateReadTime(content),
+                summary: fallbackSummary(content),
+                author: { name: AUTHOR_NAME, avatar: AUTHOR_IMG }
+              };
+            });
+            renderCards(items);
+          })
+          .catch(() => {
+            track.innerHTML = '<div class="msg msg--err">Failed to load articles.</div>';
+          });
       });
   </script>
 </body>
