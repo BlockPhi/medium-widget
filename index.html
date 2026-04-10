@@ -364,6 +364,17 @@
     next.addEventListener('click', () => { if (page < totalPages - 1) { page++; slide(); } });
     window.addEventListener('resize', () => { slide(); });
 
+    /* ── Escape user content before injecting into innerHTML ── */
+    function escapeHtml(str) {
+      if (str == null) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     /* ── Helpers for RSS fallback ── */
     function extractImg(html) {
       const m = html.match(/<img[^>]+src=["']([^"']+)/);
@@ -412,12 +423,13 @@
 
       reordered.forEach(item => {
         const date = new Date(item.pubDate);
-        const fmt = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
-        const img = item.image || '';
-        const readMin = item.readTime || 1;
-        const summary = item.summary || '';
-        const authorName = (item.author && item.author.name) || AUTHOR_NAME;
-        const authorAvatar = (item.author && item.author.avatar) || AUTHOR_IMG;
+        const fmt = escapeHtml(date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }));
+        const img = escapeHtml(item.image || '');
+        const readMin = escapeHtml(item.readTime || 1);
+        const title = escapeHtml(item.title || '');
+        const summary = escapeHtml(item.summary || '');
+        const authorName = escapeHtml((item.author && item.author.name) || AUTHOR_NAME);
+        const authorAvatar = escapeHtml((item.author && item.author.avatar) || AUTHOR_IMG);
 
         const el = document.createElement('a');
         el.className = 'card';
@@ -427,7 +439,7 @@
         el.innerHTML =
           (img ? '<div class="card-img"><img src="' + img + '" alt="" loading="lazy"></div>' : '') +
           '<div class="card-body">' +
-            '<h3>' + item.title + '</h3>' +
+            '<h3>' + title + '</h3>' +
             (summary ? '<p class="card-summary">' + summary + '</p>' : '') +
             '<div class="card-footer">' +
               '<img src="' + authorAvatar + '" alt="' + authorName + '" class="author-avatar" loading="lazy">' +

@@ -105,9 +105,8 @@ async function getArticlesWithSummaries(forceRefresh = false) {
   const data = await res.json();
   if (data.status !== 'ok') throw new Error(data.message || 'RSS error');
 
-  const articles = [];
-
-  for (const item of data.items) {
+  /* Process all articles in parallel — summary generation is the slow part */
+  const articles = await Promise.all(data.items.map(async (item) => {
     /* Use slug from URL as unique ID (avoids base64 truncation collisions) */
     const slug = item.link.split('/').filter(Boolean).pop().split('?')[0];
     const articleId = slug.substring(0, 60);
@@ -130,7 +129,7 @@ async function getArticlesWithSummaries(forceRefresh = false) {
 
     const content = item.description || item.content || '';
 
-    articles.push({
+    return {
       title: item.title,
       link: item.link,
       pubDate: item.pubDate,
@@ -141,8 +140,8 @@ async function getArticlesWithSummaries(forceRefresh = false) {
         name: 'Jack',
         avatar: 'https://medium-widget.vercel.app/Jack.jpg'
       }
-    });
-  }
+    };
+  }));
 
   await redis.set(CACHE_KEY, articles, { ex: CACHE_TTL });
   return articles;
