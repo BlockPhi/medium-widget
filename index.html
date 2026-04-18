@@ -27,8 +27,22 @@
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* Tell the browser this document renders in dark mode so native
+       iframe defaults (which paint opaque white when unset) don't bleed
+       through the transparent body. Belt-and-braces with the embedding
+       site's `.mw-iframe { background: var(--black) }` rule. */
+    :root {
+      color-scheme: dark;
+    }
+
     html, body {
-      background: transparent;
+      /* Explicit dark background (matches the embedding site's --black)
+         so the iframe NEVER flashes white during load, between card rows,
+         or in any gap where a child element doesn't paint its own bg.
+         Was previously `transparent`, which let the browser-default
+         white iframe-element bg show through — visible as a full-widget
+         white backdrop on the insights page. */
+      background: #0a0a0a;
       color: var(--white);
       font-family: 'Cormorant Garamond', Georgia, serif;
       line-height: 1.5;
